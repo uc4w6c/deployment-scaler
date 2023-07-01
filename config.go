@@ -1,28 +1,28 @@
 package main
 
 import (
-        "os"
+	"os"
 
 	"gopkg.in/yaml.v3"
 )
 
 type Deployment struct {
-  Namespace string
-  Name string
-  Replicas int
+	Namespace string
+	Name      string
+	Replicas  int
 }
 
 type Config struct {
-  Deployments []Deployment
+	Deployments []Deployment
 }
 
 func getConfig() Config {
-  config := Config{}
-  b, _ := os.ReadFile("config.yaml")
+	config := Config{}
+	b, _ := os.ReadFile("config.yaml")
 
-  err := yaml.Unmarshal(b, &config)
-  if err != nil {
-      panic(err)
-  }
-  return config
+	err := yaml.Unmarshal(b, &config)
+	if err != nil {
+		panic(err)
+	}
+	return config
 }
