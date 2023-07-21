@@ -29,9 +29,10 @@ func scale(deploymentConfig *Deployment) {
 	sc := *s
 	sc.Spec.Replicas = int32(deploymentConfig.Replicas)
 
-	us, err := deploymentsClient.GetScale(context.TODO(), deploymentConfig.Name, v1.GetOptions{})
+	us, err := deploymentsClient.UpdateScale(context.TODO(), deploymentConfig.Name, &sc, v1.UpdateOptions{})
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
-	log.Panicln(us)
+	log.Print(us)
 }
