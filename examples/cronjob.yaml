@@ -1,39 +1,51 @@
 apiVersion: batch/v1
-kind: Job
+kind: CronJob
 metadata:
-  name: deployment-scaler
+  name: deployment-scaler-stop
 spec:
-  template:
+  schedule: "55 20 * * *"
+  jobTemplate:
     spec:
-      restartPolicy: Never
-      serviceAccountName: deployment-scaler-service-account
-      containers:
-      - name: deployment-scaler
-        image: deployment-scaler:1.0.0
-        volumeMounts:
-        - mountPath: /config.yaml
-          subPath: config.yaml
-          name: config-volume
-          readOnly: true 
-      volumes:
-      - name: config-volume
-        configMap:
-          name: deployment-scaler-config
-  backoffLimit: 4
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: deployment-scaler-service-account
+          containers:
+          - name: deployment-scaler
+            image: deployment-scaler:1.0.0
+            volumeMounts:
+            - mountPath: /config.yaml
+              subPath: config.yaml
+              name: config-volume
+              readOnly: true
+          volumes:
+          - name: config-volume
+            configMap:
+              name: deployment-scaler-stop-config
+      backoffLimit: 4
 ---
-apiVersion: v1
-kind: ConfigMap
+apiVersion: batch/v1
+kind: CronJob
 metadata:
-  name: deployment-scaler-config
-  
-data:
-  config.yaml: |
-    deployments:
-    - namespace: default
-      name: web-nginx
-      replicas: 1
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: deployment-scaler-service-account
+  name: deployment-scaler-start
+spec:
+  schedule: "56 20 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: deployment-scaler-service-account
+          containers:
+          - name: deployment-scaler
+            image: deployment-scaler:1.0.0
+            volumeMounts:
+            - mountPath: /config.yaml
+              subPath: config.yaml
+              name: config-volume
+              readOnly: true
+          volumes:
+          - name: config-volume
+            configMap:
+              name: deployment-scaler-start-config
+      backoffLimit: 4

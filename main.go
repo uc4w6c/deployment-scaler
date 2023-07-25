@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"log"
 )
 
 func main() {
-	fmt.Println(time.Now())
+	log.Println("start")
 
 	config := getConfig()
 	for _, v := range config.Deployments {
-		fmt.Println(v.Name + "," + v.Namespace)
 		scale(&v)
 	}
+
+	log.Println("end")
 }

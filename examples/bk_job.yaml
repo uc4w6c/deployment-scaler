@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: deployment-scaler
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: deployment-scaler-service-account
+      containers:
+      - name: deployment-scaler
+        image: deployment-scaler:1.0.0
+        volumeMounts:
+        - mountPath: /config.yaml
+          subPath: config.yaml
+          name: config-volume
+          readOnly: true
+      volumes:
+      - name: config-volume
+        configMap:
+          name: deployment-scaler-config
+  backoffLimit: 4
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deployment-scaler-config
+  
+data:
+  config.yaml: |
+    deployments:
+    - namespace: default
+      name: web-nginx
+      replicas: 0
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: deployment-scaler-service-account

@@ -10,29 +10,26 @@ import (
 )
 
 func scale(deploymentConfig *Deployment) {
-	// creates the in-cluster config
 	clusterConfig, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
-	// creates the clientset
+
 	clientset, err := kubernetes.NewForConfig(clusterConfig)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 	deploymentsClient := clientset.AppsV1().Deployments(deploymentConfig.Namespace)
 	s, err := deploymentsClient.GetScale(context.TODO(), deploymentConfig.Name, v1.GetOptions{})
 	if err != nil {
-		log.Fatal(err)
-		return
+		log.Panic(err)
 	}
 	sc := *s
 	sc.Spec.Replicas = int32(deploymentConfig.Replicas)
 
-	us, err := deploymentsClient.UpdateScale(context.TODO(), deploymentConfig.Name, &sc, v1.UpdateOptions{})
+	_, err = deploymentsClient.UpdateScale(context.TODO(), deploymentConfig.Name, &sc, v1.UpdateOptions{})
 	if err != nil {
-		log.Fatal(err)
-		return
+		log.Panic(err)
 	}
-	log.Print(us)
+	log.Printf("namespace:%s, deployment:%s scaled to %d", deploymentConfig.Namespace, deploymentConfig.Name, deploymentConfig.Replicas)
 }

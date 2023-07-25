@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -22,7 +23,7 @@ func getConfig() Config {
 
 	err := yaml.Unmarshal(b, &config)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	return config
 }
